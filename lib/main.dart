@@ -1,96 +1,118 @@
 import 'dart:async';
 
-import 'package:easy_alert/easy_alert.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:device_preview/device_preview.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_clean_architecture/core/util/injection_container.dart'
-    as di;
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_stetho/flutter_stetho.dart';
 
-import 'core/preference/PrefConstants.dart';
-import 'core/preference/Prefs.dart';
-import 'core/util/AppConstants.dart';
-import 'core/util/FlavorConfig.dart';
-import 'core/util/injection_container.dart';
-import 'core/util/internationalization/local/AppLocalizations.dart';
-import 'features/feed/presentation/bloc/authentication_bloc.dart';
-import 'features/feed/presentation/screens/FeedsPage.dart';
-import 'features/login/presentation/screens/LoginPage.dart';
+import 'core/app_configuration_bloc/app_configuration_bloc.dart';
+import 'core/app_configuration_bloc/app_configuration_state.dart';
+import 'core/base/bloc/api_base_bloc/api_base_bloc.dart';
+import 'core/const/app_constants.dart';
+import 'core/di/injection_container.dart' as di;
+import 'core/di/injection_container.dart';
+import 'core/localizations/app_localizations.dart';
+import 'core/preference/preference.dart';
+import 'core/preference/preference_helper.dart';
+import 'core/routes/routes.dart';
+import 'core/routes/screen_navigation_logger.dart';
+import 'core/ui/theme/colors/colors_dark.dart';
+import 'core/ui/theme/colors/colors_inf.dart';
+import 'core/ui/theme/colors/colors_light.dart';
+import 'core/ui/theme/theme_util/theme_util.dart';
 
 void mainDelegate() async {
-  await Prefs.init();
+  WidgetsFlutterBinding.ensureInitialized();
+  await Preference.init();
   await di.init();
-  Crashlytics.instance.enableInDevMode = false;
-  FlutterError.onError = (FlutterErrorDetails details) {
-    Crashlytics.instance.recordFlutterError(details);
-  };
-  var appTheme = Prefs.getString(KEY_APP_THEME);
-  runZoned<Future<void>>(() async {
-    runApp(AlertProvider(
-        config: AlertConfig(),
-        child: BlocProvider<AuthenticationBloc>(
-          builder: (context) => sl(),
-          child: MyApp(
-            appTheme: appTheme,
-          ),
-        )));
-  }, onError: Crashlytics.instance.recordError);
+
+  ///Todo: Uncomment after firebase setup
+  // await Firebase.initializeApp();
+  // if (kReleaseMode) {
+  //   await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
+  //   await FirebaseCrashlytics.instance;
+  //   await CrashlyticsConfig.setCrashlyticsData();
+  // }
+  // FlutterError.onError = (FlutterErrorDetails details) {
+  //   FirebaseCrashlytics.instance.recordFlutterError(details);
+  // };
+
+  ///Set portrait mode
+  await SystemChrome.setPreferredOrientations(
+    [
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ],
+  );
+
+  runZonedGuarded(
+    () async => runApp(
+      DevicePreview(
+        enabled: ENABLE_DEVICE_PREVIEW,
+        builder: (BuildContext context) => MultiBlocProvider(
+          providers: [
+            BlocProvider<AppConfigurationBloc>(
+              create: (context) => sl(),
+            ),
+            BlocProvider<ApiBaseBloc>(
+              create: (context) => sl(),
+            ),
+          ],
+          child: MyApp(),
+        ),
+      ),
+    ),
+    (object, stackTrace) {
+      ///Todo: Uncomment after firebase setup
+      //FirebaseCrashlytics.instance.recordError(object, stackTrace);
+    },
+  );
 }
 
 class MyApp extends StatefulWidget {
-  String appTheme;
-
-  MyApp({Key key, this.appTheme}) : super(key: key);
+  MyApp({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _MyApp();
 }
 
 class _MyApp extends State<MyApp> {
-  MaterialColor primarySwatch = Colors.blue;
-
-  void initState() {
-    super.initState();
-    changePrimarySwatch(widget?.appTheme);
-  }
+  PreferenceHelper preferenceHelper = sl();
 
   @override
-  Widget build(BuildContext context) {
-    Stetho.initialize();
+  Widget build(BuildContext context) =>
+      BlocBuilder<AppConfigurationBloc, AppConfigurationState>(
+        builder: (BuildContext context, AppConfigurationState state) =>
+            MaterialApp(
+          useInheritedMediaQuery: true,
+          builder: DevicePreview.appBuilder,
+          themeMode: ThemeMode.light,
+          debugShowCheckedModeBanner: false,
+          supportedLocales: [Locale('en')],
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+            DefaultCupertinoLocalizations.delegate,
+          ],
+          locale: Locale(preferenceHelper.getLanguage()),
+          theme: ThemeUtil.getLightTheme(
+            context: context,
+            appColors: getAppColors(),
+          ),
+          darkTheme: ThemeUtil.getDarkTheme(
+            context: context,
+            appColors: getAppColors(),
+          ),
+          initialRoute: Routes.splash,
+          routes: Routes.routes,
+          navigatorObservers: [ScreenNavigationLogger()],
+        ),
+      );
 
-    print("Current flavor " + FlavorConfig.instance.flavor.toString());
-    SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      localizationsDelegates: [
-        AppLocalizationsDelegate(),
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate
-      ],
-      supportedLocales: [Locale('en')],
-      title: 'Flutter Demo',
-      theme:
-          ThemeData(primarySwatch: primarySwatch, fontFamily: 'SourceSansPro'),
-      home: LoginPage(),
-      routes: <String, WidgetBuilder>{
-        '/SignIn': (BuildContext context) => FeedsPage(),
-      }, //Dashboard,MajalisCalendar
-    );
-  }
-
-  void changePrimarySwatch(String appTheme) {
-    setState(() {
-      if (appTheme == GREEN) {
-        primarySwatch = Colors.teal;
-      } else if (appTheme == BLUE_DARK) {
-        primarySwatch = Colors.indigo;
-      } else {
-        primarySwatch = Colors.blue;
-      }
-    });
-  }
+  ColorsInf getAppColors() =>
+      preferenceHelper.getIsDarkTheme() ? ColorsDark() : ColorsLight();
 }

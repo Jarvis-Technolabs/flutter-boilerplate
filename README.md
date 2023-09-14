@@ -1,39 +1,61 @@
-Project is having 2 main layers:-
+**Flutter version**
+```
+ - 3.7.12
+```
 
-1.) Core 
+**Clean Architecture**
 
-2.) Feature
+Architecture is divided into 3 layers:
 
-This layer is divided into 3 main part per module:-
+A) Data: Takes care of how data will be fetched. 
+- Data source
+- Entities/Data models
+- Repositories implementation
 
+B) Domain: Takes care of core business logic and provides data repositories. It is unaware of core implementation of how data is fetched.
+- Repositories
+- Usecases
 
-A.)Data:- 
-         Takes care of how data will be fetched [remote/local data source!].
-         Contains  1.)Entitites,
-                   2.)Repositories[remote/local]
+C) Presentation: Takes care of presenting data using blocs.
+- Bloc
+- Screen - UI
+- Widgets
 
-B.)Domain:- 
-           Takes care of core business logic and provides data repositories. Hence it is unaware of core implementation
-           of how data is fetched.
-C.)Presentation:-
-            Takes care of presenting data using blocs. 
+```
+Clean Architecture - https://resocoder.com/2019/08/27/flutter-tdd-clean-architecture-course-1-explanation-project-structure/
+```
 
+**State management**
+```
+Bloc - https://bloclibrary.dev/#/gettingstarted
+```
 
+**Generate files**
 
-Block architecture all demos:-
+```
+flutter pub run build_runner build --delete-conflicting-outputs
+```
 
-1.)https://github.com/felangel/bloc/tree/master/examples/flutter_login/lib/login
-2.)https://pub.dev/packages/flutter_bloc  [provides multiple bloc/listener methods]
+**Build Android Staging Release**
 
-Clean architecture explanation:-
-https://pub.dev/packages/flutter_clean_architecture
+```
+flutter build apk --release --flavor staging -t lib/core/flavour/main_staging.dart
+```
 
-Note:-
-Just took concept of clean architecture.
+**Build iOS Staging Release**
 
+```
+flutter build ios --release --flavor staging -t lib/core/flavour/main_staging.dart
+```
 
+**Build Android Production Release**
 
-Pending tasks:-
-1.) add crashalytics
-2.) add product build flavour
-3.) Screenutils
+```
+flutter build apk --release --flavor staging -t lib/core/flavour/main_prod.dart
+```
+
+**Build iOS Production Release**
+
+```
+flutter build ios --release --flavor staging -t ib/core/flavour/main_prod.dart
+```

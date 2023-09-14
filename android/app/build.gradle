@@ -1,3 +1,6 @@
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -21,13 +24,37 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+def getCurrentFlavor() {
+    Gradle gradle = getGradle()
+    String tskReqStr = gradle.getStartParameter().getTaskRequests().toString()
+
+    Pattern pattern
+
+    if (tskReqStr.contains("assemble"))
+        pattern = Pattern.compile("assemble(\\w+)(Release|Debug|Profile)")
+    else if (tskReqStr.contains("bundle"))
+        pattern = Pattern.compile("bundle(\\w+)(Release|Debug|Profile)")
+    else
+        pattern = Pattern.compile("generate(\\w+)(Release|Debug|Profile)")
+
+    Matcher matcher = pattern.matcher(tskReqStr)
+
+    if (matcher.find())
+        return matcher.group(1).toLowerCase()
+    else {
+        println "NO MATCH FOUND"
+        return ""
+    }
+}
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
+def keystoreProperties = new Properties()
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 33
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -35,42 +62,86 @@ android {
 
     lintOptions {
         disable 'InvalidPackage'
+        checkReleaseBuilds false
+    }
+
+    signingConfigs {
+        ///Todo: Uncomment when you create keystore file
+//        stagingConfig {
+//            def keystorePropertiesFile = rootProject.file("keystore.staging.properties")
+//            keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+//            keyAlias keystoreProperties['keyAlias']
+//            keyPassword keystoreProperties['keyPassword']
+//            storeFile file(keystoreProperties['storeFile'])
+//            storePassword keystoreProperties['storePassword']
+//        }
+//
+//        releaseConfig {
+//            def keystorePropertiesFile = rootProject.file("keystore.production.properties")
+//            keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+//            keyAlias keystoreProperties['keyAlias']
+//            keyPassword keystoreProperties['keyPassword']
+//            storeFile file(keystoreProperties['storeFile'])
+//            storePassword keystoreProperties['storePassword']
+//        }
     }
 
     defaultConfig {
-
         applicationId "jarvis.architecture"
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
 
-
     flavorDimensions "app"
 
+    buildTypes {
+        debug {
+            ///Todo: Uncomment when you create keystore file
+            //signingConfig signingConfigs.debug
+        }
+        release {
+            if (getCurrentFlavor() == 'dev' || getCurrentFlavor() == 'staging') {
+                println "stagingConfig getting assigned"
+                ///Todo: Uncomment when you create keystore file
+            //    signingConfig signingConfigs.stagingConfig
+            } else {
+                println "releaseConfig getting assigned"
+                ///Todo: Uncomment when you create keystore file
+               // signingConfig signingConfigs.releaseConfig
+            }
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
 
     productFlavors {
         dev {
             dimension "app"
             applicationIdSuffix ".dev"
             manifestPlaceholders = [
-                    appName: "DemoDev"
+                    appName: "Dev Boilerplate",
+                    mapsKey: ""
             ]
         }
         staging {
             dimension "app"
             applicationIdSuffix ".staging"
             manifestPlaceholders = [
-                    appName: "DemoStaging"
+                    appName: "Staging Boilerplate",
+                    mapsKey: ""
             ]
         }
         prod {
+            applicationId "jarvis.architecture"
             dimension "app"
             manifestPlaceholders = [
-                    appName: "DemoApp"
+                    appName: "Boilerplate",
+                    mapsKey: ""
             ]
         }
     }
@@ -85,9 +156,8 @@ dependencies {
     implementation "com.jakewharton.timber:timber:4.6.1"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1@aar'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
-
-apply plugin: 'com.google.gms.google-services'
-apply plugin: 'io.fabric'
+///Todo: Uncomment when you setup firebase
+//apply plugin: 'com.google.gms.google-services'
+//apply plugin: 'com.google.firebase.crashlytics'

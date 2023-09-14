@@ -1,0 +1,4 @@
+#include "Generated.xcconfig"
+FLUTTER_TARGET=lib/core/flavour/main_prod.dart
+APP_NAME = Boilerplate
+PRODUCT_BUNDLE_IDENTIFIER = jarvis.architecture
