@@ -1,8 +1,8 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../util/screen_util/screen_util.dart';
 import '../theme/colors/colors_inf.dart';
 
 Future<T?> showAppDialog<T>({
@@ -52,7 +52,7 @@ Future<T?> showAppDialog<T>({
       ),
     );
 
-Future<T?> showTrackMateBottomSheet<T>({
+Future<T?> showAppBottomSheet<T>({
   required BuildContext context,
   required Widget child,
   required ColorsInf appColors,

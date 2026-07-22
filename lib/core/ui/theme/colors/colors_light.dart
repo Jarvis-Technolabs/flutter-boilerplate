@@ -68,13 +68,13 @@ class ColorsLight implements ColorsInf {
   Color checkBoxFillColor = AppColor.checkBoxFillColor;
 
   @override
-  Color hintColor =  AppColor.hintTextColor;
+  Color hintColor = AppColor.hintTextColor;
 
   @override
-  Color radioFillColor =  AppColor.radioFillColor;
+  Color radioFillColor = AppColor.radioFillColor;
 
   @override
-  Color fabBgColor =  AppColor.fabBgColor;
+  Color fabBgColor = AppColor.fabBgColor;
 
   @override
   Color cursorColor = AppColor.cursorColor;
@@ -85,4 +85,9 @@ class ColorsLight implements ColorsInf {
   @override
   Color textSelectionHandlerColor = AppColor.textSelectionHandlerColor;
 
+  @override
+  Color keyboardDoneColor = AppColor.blueDoneKeyboardTextColor;
+
+  @override
+  Color errorColor = AppColor.redColor;
 }

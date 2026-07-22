@@ -32,12 +32,12 @@ class PreferenceHelperImpl implements PreferenceHelper {
       await Preference.setSecuredString(KEY_USER_NAME, userName);
 
   @override
-  Future<String?> getPassword() async =>
-      await Preference.getSecuredString(KEY_PASSWORD);
+  Future<String?> getMobileNo() async =>
+      await Preference.getSecuredString(KEY_MOBILE_NO);
 
   @override
-  Future<void> setPassword(String password) async =>
-      await Preference.setSecuredString(KEY_PASSWORD, password);
+  Future<void> setMobileNo(String mobileNo) async =>
+      await Preference.setSecuredString(KEY_MOBILE_NO, mobileNo);
 
   @override
   bool getIsUserLoggedIn() => Preference.getBool(KEY_IS_USER_LOGGED_IN, false);

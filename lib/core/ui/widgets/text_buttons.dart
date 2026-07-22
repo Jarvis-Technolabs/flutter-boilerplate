@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_clean_architecture/core/base/screen/base_screen.dart';
 import 'package:flutter_clean_architecture/core/const/string_constants.dart';
-import 'package:flutter_clean_architecture/core/ui/theme/text_style_extension/text_style_extension.dart';
+import 'package:flutter_clean_architecture/core/localizations/localization_extension.dart';
+import 'package:flutter_clean_architecture/core/ui/theme/text_extension/text_extension.dart';
 import 'package:flutter_clean_architecture/core/ui/widget_extension/widget_extension.dart';
 
 import '../../localizations/app_localizations.dart';
@@ -56,7 +57,7 @@ class SaveTextButton extends BaseScreen {
 class _SaveTextButtonState extends BaseScreenState<SaveTextButton> {
   @override
   Widget body(_) => TextButton(
-        text: AppLocalizations.of(context).translate(LABEL_TITLE_SAVE_CAPITAL),
+        text: context.tr(LABEL_TITLE_SAVE_CAPITAL),
         onTap: widget.onTap,
       );
 }
@@ -75,7 +76,7 @@ class OkTextButton extends BaseScreen {
 class _OkTextButtonState extends BaseScreenState<OkTextButton> {
   @override
   Widget body(_) => TextButton(
-        text: AppLocalizations.of(context).translate(LABEL_TITLE_OK),
+        text: context.tr(LABEL_TITLE_OK),
         onTap: widget.onTap,
       );
 }
@@ -88,7 +89,7 @@ class CancelTextButton extends BaseScreen {
 class _CancelTextButtonState extends BaseScreenState<CancelTextButton> {
   @override
   Widget body(_) => TextButton(
-        text: AppLocalizations.of(context).translate(LABEL_TITLE_CANCEL),
+        text: context.tr(LABEL_TITLE_CANCEL),
         onTap: () {
           goBack(context);
         },
@@ -103,7 +104,7 @@ class CloseTextButton extends BaseScreen {
 class _CloseTextButtonState extends BaseScreenState<CloseTextButton> {
   @override
   Widget body(_) => TextButton(
-        text: AppLocalizations.of(context).translate(LABEL_CLOSE),
+        text: context.tr(LABEL_CLOSE),
         onTap: () {
           goBack(context);
         },
@@ -192,7 +193,7 @@ class DoneTextButton extends BaseScreen {
 class _DoneTextButtonState extends BaseScreenState<DoneTextButton> {
   @override
   Widget body(_) => TextButton(
-        text: AppLocalizations.of(context).translate(LABEL_DONE),
+        text: context.tr(LABEL_DONE),
         onTap: widget.onTap,
       );
 }

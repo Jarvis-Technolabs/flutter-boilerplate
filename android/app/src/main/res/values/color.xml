@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="appBackgroundColor">#FFFFFF</color>
+    <!-- TODO: Customize the Android splash screen background color by updating splash_background in res/values/colors.xml (Light theme) and res/values-night/colors.xml (Dark theme). -->
+    <color name="splash_background">#FFFFFF</color>
 </resources>

@@ -9,6 +9,7 @@ class JailBreakMethodChannelHandler() {
 
     companion object {
         private const val METHOD_CHANNEL_JAIL_BREAK = "jailBreakChannel"
+        private const val METHOD_CHECK_JAIL_BREAK = "checkJailbreak"
         private val PACKAGE_LIST = arrayOf("me.shingle.fridaserver")
     }
 
@@ -17,6 +18,11 @@ class JailBreakMethodChannelHandler() {
             dartExecutor.binaryMessenger,
             METHOD_CHANNEL_JAIL_BREAK
         ).setMethodCallHandler { call, result ->
+            if (call.method != METHOD_CHECK_JAIL_BREAK) {
+                result.notImplemented()
+                return@setMethodCallHandler
+            }
+
             var status = false
 
             try {

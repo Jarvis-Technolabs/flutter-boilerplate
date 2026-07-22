@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bloc/src/bloc.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter_clean_architecture/core/api/data_source/remote_ds/remote_ds_impl.dart';
 import 'package:flutter_clean_architecture/core/base/bloc/api_base_bloc/api_base_bloc.dart';
 import 'package:flutter_clean_architecture/core/base/bloc/api_base_bloc/api_base_bloc_event.dart';
 import 'package:flutter_clean_architecture/core/base/bloc/base_bloc.dart';
@@ -39,10 +40,10 @@ class SplashBloc extends BaseBloc<SplashEvent, SplashState> {
     Either<Failure, Success> result =
         await generatePublicTokenUseCase(NoRequest());
     await result.fold(
-      (failure){
+      (failure) {
         emit(GeneratePublicTokenErrorState(message: failure.errorMessage));
       },
-      (data){
+      (data) {
         add(FetchGetMobileConfigEventDataEvent());
       },
     );
@@ -52,13 +53,13 @@ class SplashBloc extends BaseBloc<SplashEvent, SplashState> {
       FetchGetMobileConfigEventDataEvent event,
       Emitter<SplashState> emit) async {
     Either<Failure, Success> result = await getMobileConfigUseCase(NoRequest());
-    final buildNumber = int.tryParse(await getAppVersion());
+    final int? buildNumber = int.tryParse(await getAppVersion());
     await result.fold(
       (failure) async {
         bool isUnAuthorised = failure.statusCode == UN_AUTHORISED_ERROR_CODE;
         if (isUnAuthorised) {
           if (!preferenceHelper.getIsUserLoggedIn()) {
-            await preferenceHelper.clearAllPrefData();
+            await commonUtilities.clearData();
             add(PublicTokenEvent());
           } else {
             apiBaseBlocObject.add(
@@ -71,7 +72,7 @@ class SplashBloc extends BaseBloc<SplashEvent, SplashState> {
           emit(GetMobileConfigFetchedState());
         }
       },
-      (data){
+      (data) {
         GetMobileAPPConfigurationResponse getMobileAPPConfigurationResponse =
             data.data;
         if (buildNumber != null) {

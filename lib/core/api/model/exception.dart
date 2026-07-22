@@ -31,9 +31,6 @@ class ServerException implements Exception {
 
   factory ServerException.handleServerException(Response response) {
     ApiResponse responseData = ApiResponse.fromJson(json.decode(response.body));
-
-    print('ServerException : $responseData');
-
     return ServerException(
       statusCode: response.statusCode,
       message: response.reasonPhrase.toString(),

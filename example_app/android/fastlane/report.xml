@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="fastlane.lanes">
+    
+    
+    
+      
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000372">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="1: chmod 775 ./flutter_build.sh" time="0.009107">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="2: pwd" time="0.011352">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="3: ./flutter_build.sh --production_apk" time="838.135025">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="4: firebase_app_distribution" time="21.154206">
+        
+      </testcase>
+    
+  </testsuite>
+</testsuites>

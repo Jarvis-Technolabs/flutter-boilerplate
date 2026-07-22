@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
-
-import '../../util/screen_util/screen_util.dart';
+import 'package:flutter_clean_architecture/core/const/app_constants.dart';
+import 'package:flutter_clean_architecture/core/const/string_constants.dart';
+import 'package:flutter_clean_architecture/core/localizations/app_localizations.dart';
+import 'package:flutter_clean_architecture/core/localizations/localization_extension.dart';
+import 'package:flutter_clean_architecture/core/ui/theme/colors/colors_inf.dart';
+import 'package:flutter_clean_architecture/core/ui/theme/text_extension/text_extension.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:keyboard_actions/keyboard_actions.dart';
 
 extension WidgetExtension on Widget {
   ///Apply all padding
@@ -10,10 +16,10 @@ extension WidgetExtension on Widget {
   }) =>
       Padding(
         padding: EdgeInsetsDirectional.fromSTEB(
-          screenUtil.setWidth(padding),
-          screenUtil.setHeight(padding),
-          screenUtil.setWidth(padding),
-          screenUtil.setHeight(padding),
+          padding.w,
+          padding.h,
+          padding.w,
+          padding.h,
         ),
         child: this,
       );
@@ -26,8 +32,8 @@ extension WidgetExtension on Widget {
   }) =>
       Padding(
         padding: EdgeInsetsDirectional.symmetric(
-          horizontal: screenUtil.setWidth(horizontalPadding),
-          vertical: screenUtil.setHeight(verticalPadding),
+          horizontal: horizontalPadding.w,
+          vertical: verticalPadding.h,
         ),
         child: this,
       );
@@ -42,11 +48,71 @@ extension WidgetExtension on Widget {
   }) =>
       Padding(
         padding: EdgeInsetsDirectional.fromSTEB(
-          screenUtil.setWidth(paddingLeft),
-          screenUtil.setHeight(paddingTop),
-          screenUtil.setWidth(paddingRight),
-          screenUtil.setHeight(paddingBottom),
+          paddingLeft.w,
+          paddingTop.h,
+          paddingRight.w,
+          paddingBottom.h,
         ),
         child: this,
+      );
+
+  Widget doneKeyBoard({
+    required ColorsInf appColors,
+    required FocusNode? node,
+    required BuildContext context,
+    required ScreenUtil screenUtil,
+    Function? onPressed,
+    showDoneButton = true,
+  }) =>
+      showDoneButton
+          ? KeyboardActions(
+              autoScroll: false,
+              config: KeyboardActionsConfig(
+                keyboardActionsPlatform: KEYBOARD_TYPE,
+                nextFocus: false,
+                actions: [
+                  KeyboardActionsItem(
+                    focusNode: node!,
+                    toolbarButtons: [
+                      (node) {
+                        return InkWell(
+                          onTap: () {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            if (onPressed != null) {
+                              onPressed();
+                            }
+                          },
+                          child: getDoneWidget(
+                            screenUtil: screenUtil,
+                            context: context,
+                            appColors: appColors,
+                          ),
+                        );
+                      }
+                    ],
+                  ),
+                ],
+              ),
+              child: this,
+            )
+          : this;
+
+  Widget getDoneWidget({
+    required ScreenUtil screenUtil,
+    required BuildContext context,
+    required ColorsInf appColors,
+  }) =>
+      Padding(
+        padding: EdgeInsetsDirectional.fromSTEB(
+          5.w,
+          10.h,
+          15.w,
+          10.h,
+        ),
+        child: context.tr(LABEL_DONE_KEYBOARD)
+            .getDoneText(
+              screenUtil: screenUtil,
+              appColors: appColors,
+            ),
       );
 }

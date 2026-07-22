@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "573948995056",
+    "project_id": "clean-pattern-boilerplate",
+    "storage_bucket": "clean-pattern-boilerplate.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:573948995056:android:cfd6191b5fe395afd66935",
+        "android_client_info": {
+          "package_name": "jarvis.architecture.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDaGssP5zbg087kUO5WDLfDucuUXgZTJEY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

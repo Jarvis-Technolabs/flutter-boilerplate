@@ -1,8 +1,9 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_clean_architecture/core/ui/widgets/loading_indicator.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../util/screen_util/screen_util.dart';
 import '../theme/colors/colors_inf.dart';
 
 Future<Widget?> loadingDialog({
@@ -43,17 +44,7 @@ Future<Widget?> loadingDialog({
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
-                        SizedBox(
-                          height: screenUtil.setWidth(40),
-                          width: screenUtil.setWidth(40),
-                          child: CircularProgressIndicator(
-                            backgroundColor: appColors.whiteColor,
-                            strokeWidth: 3,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              appColors.primaryColor,
-                            ),
-                          ),
-                        )
+                        CommonCircularProgressIndicator(),
                       ],
                     ),
                   ),

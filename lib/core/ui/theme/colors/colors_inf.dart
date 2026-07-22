@@ -28,4 +28,6 @@ abstract class ColorsInf {
   late Color switchThumbColor;
   late Color cursorColor;
   late Color textSelectionHandlerColor;
+  late Color keyboardDoneColor;
+  late Color errorColor;
 }

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_clean_architecture/core/base/screen/base_screen.dart';
 import 'package:flutter_clean_architecture/core/const/string_constants.dart';
 import 'package:flutter_clean_architecture/core/localizations/app_localizations.dart';
-import 'package:flutter_clean_architecture/core/ui/theme/text_style_extension/text_style_extension.dart';
+import 'package:flutter_clean_architecture/core/localizations/localization_extension.dart';
+import 'package:flutter_clean_architecture/core/ui/theme/text_extension/text_extension.dart';
 import 'package:flutter_clean_architecture/core/ui/widgets/outline_common_button.dart';
 
 import '../../routes/routes.dart';
@@ -52,14 +53,14 @@ class _CustomAlertWithTwoButtonsState
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 OutlineCommonButton(
-                  title: AppLocalizations.of(context).translate(LABEL_CLOSE),
+                  title: context.tr(LABEL_CLOSE),
                   backgroundColor: appColors.whiteColor,
                   buttonTextColor: appColors.textColor,
                   selectHandler: () => goBack(context),
                   borderColor: appColors.inactiveSteeperColor,
                 ),
                 OutlineCommonButton(
-                  title: AppLocalizations.of(context).translate(widget.buttonTitleText),
+                  title: context.tr(widget.buttonTitleText),
                   backgroundColor: appColors.primaryColor,
                   buttonTextColor: appColors.whiteColor,
                   selectHandler: () {

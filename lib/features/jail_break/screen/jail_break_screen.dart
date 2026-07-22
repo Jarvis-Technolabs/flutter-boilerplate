@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_clean_architecture/core/base/screen/base_screen.dart';
 import 'package:flutter_clean_architecture/core/const/image_constants.dart';
 import 'package:flutter_clean_architecture/core/const/string_constants.dart';
-import 'package:flutter_clean_architecture/core/ui/theme/text_style_extension/text_style_extension.dart';
+import 'package:flutter_clean_architecture/core/ui/theme/text_extension/text_extension.dart';
 import 'package:flutter_clean_architecture/core/ui/widget_extension/image_extension.dart';
 import 'package:flutter_clean_architecture/core/ui/widget_extension/widget_extension.dart';
 
 import '../../../core/localizations/app_localizations.dart';
+import '../../../core/localizations/localization_extension.dart';
 
 class JailBreakScreen extends BaseScreen {
   @override
@@ -36,8 +37,7 @@ class _JailBreakScreenState extends BaseScreenState<JailBreakScreen> {
                   SizedBox(
                     height: screenUtil.setHeight(40),
                   ),
-                  AppLocalizations.of(context)
-                      .translate(LABEL_DEVICE_IS_ROOTED)
+                  context.tr(LABEL_DEVICE_IS_ROOTED)
                       .getText20W600Text(
                         screenUtil: screenUtil,
                         appColors: appColors,
@@ -48,8 +48,7 @@ class _JailBreakScreenState extends BaseScreenState<JailBreakScreen> {
                   ),
                   SizedBox(
                     width: screenUtil.screenWidth,
-                    child: AppLocalizations.of(context)
-                        .translate(LABEL_JAIL_BREAK_DEC)
+                    child: context.tr(LABEL_JAIL_BREAK_DEC)
                         .getSubtext16W400Text(
                           screenUtil: screenUtil,
                           appColors: appColors,

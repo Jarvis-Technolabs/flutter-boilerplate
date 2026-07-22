@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dartz/dartz.dart';
+import 'package:flutter_clean_architecture/features/splash/data/model/public_token_response.dart';
 
 import '../../../../core/api/data_source/network_info/network_info.dart';
 import '../../../../core/api/model/api_response.dart';
@@ -72,9 +73,13 @@ class GetSplashRepoImpl extends SplashRepo {
         ),
       );
     } else {
-      PreferenceHelper preferenceHelper = sl();
-      await preferenceHelper.setPublicToken(response.data);
-      return Right(Success(data: response.data));
+      PublicTokenResponse publicTokenResponse =
+          PublicTokenResponse.fromJson(response.data);
+      if (publicTokenResponse.token != null) {
+        PreferenceHelper preferenceHelper = sl();
+        await preferenceHelper.setPublicToken(publicTokenResponse.token!);
+      }
+      return Right(Success(data: publicTokenResponse));
     }
   }
 }

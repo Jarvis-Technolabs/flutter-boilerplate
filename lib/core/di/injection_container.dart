@@ -1,8 +1,42 @@
+import 'package:chucker_flutter/chucker_flutter.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cache_interceptor_hive_store/dio_cache_interceptor_hive_store.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_clean_architecture/core/di/prod_di_getter.dart';
+import 'package:flutter_clean_architecture/core/util/common_utilities.dart';
+import 'package:flutter_clean_architecture/core/util/validation_utilities.dart';
+import 'package:flutter_clean_architecture/features/create_an_account/data/data_source/create_an_account_data_source.dart';
+import 'package:flutter_clean_architecture/features/create_an_account/data/data_source/create_an_account_data_source_impl.dart';
+import 'package:flutter_clean_architecture/features/create_an_account/domain/usecases/signup_usecase.dart';
+import 'package:flutter_clean_architecture/features/dashboard/data/data_source/dashboard_data_source.dart';
+import 'package:flutter_clean_architecture/features/dashboard/data/data_source/dashboard_data_source_impl.dart';
+import 'package:flutter_clean_architecture/features/delete_account/data/data_source/delete_account_data_source.dart';
+import 'package:flutter_clean_architecture/features/delete_account/data/data_source/delete_account_data_source_impl.dart';
+import 'package:flutter_clean_architecture/features/delete_account/domain/usecases/delete_account_usecase.dart';
+import 'package:flutter_clean_architecture/features/forgot_password/data/data_source/forgot_password_data_source.dart';
+import 'package:flutter_clean_architecture/features/forgot_password/data/data_source/forgot_password_data_source_impl.dart';
+import 'package:flutter_clean_architecture/features/forgot_password/domain/usecases/forgotpassword_usecase.dart';
+import 'package:flutter_clean_architecture/features/home/data/data_source/home_data_source.dart';
+import 'package:flutter_clean_architecture/features/home/data/data_source/home_data_source_impl.dart';
+import 'package:flutter_clean_architecture/features/login/data/data_source/login_data_source.dart';
+import 'package:flutter_clean_architecture/features/login/data/data_source/login_data_source_impl.dart';
+import 'package:flutter_clean_architecture/features/login/domain/usecases/login_usecase.dart';
+import 'package:flutter_clean_architecture/features/logout/data/data_source/logout_data_source.dart';
+import 'package:flutter_clean_architecture/features/logout/data/data_source/logout_data_source_impl.dart';
+import 'package:flutter_clean_architecture/features/logout/domain/usecases/logout_usecase.dart';
+import 'package:flutter_clean_architecture/features/notification/data/data_source/notification_data_source.dart';
+import 'package:flutter_clean_architecture/features/notification/data/data_source/notification_data_source_impl.dart';
+import 'package:flutter_clean_architecture/features/notification/domain/usecases/get_notification_usecase.dart';
+import 'package:flutter_clean_architecture/features/otp_verification/data/data_source/otp_verification_data_source.dart';
+import 'package:flutter_clean_architecture/features/otp_verification/data/data_source/otp_verification_data_source_impl.dart';
+import 'package:flutter_clean_architecture/features/otp_verification/domain/usecases/sendotp_usecase.dart';
+import 'package:flutter_clean_architecture/features/otp_verification/domain/usecases/verifyotp_usecase.dart';
+import 'package:flutter_clean_architecture/features/reset_password/data/data_source/reset_password_data_source.dart';
+import 'package:flutter_clean_architecture/features/reset_password/data/data_source/reset_password_data_source_impl.dart';
+import 'package:flutter_clean_architecture/features/reset_password/domain/usecases/reset_password_usecase.dart';
+import 'package:flutter_clean_architecture/features/settings/data/data_source/setting_data_source.dart';
+import 'package:flutter_clean_architecture/features/settings/data/data_source/setting_data_source_impl.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logger/logger.dart';
@@ -69,6 +103,12 @@ Future<void> init() async {
   );
   sl.registerLazySingleton<LoggerFileUtil>(() => LoggerFileUtil());
 
+  ///CommonUtilities
+  sl.registerLazySingleton<CommonUtilities>(() => CommonUtilities());
+
+  ///ValidationUtilities
+  sl.registerLazySingleton<ValidationUtilities>(() => ValidationUtilities());
+
   ///Internet Connection checking
   sl.registerLazySingleton(() => Connectivity());
 
@@ -90,6 +130,7 @@ Future<void> init() async {
   Dio dio = Dio();
   dio.interceptors.add(ApiCallLogPrinterInterceptors());
   dio.interceptors.add(DioAPICacheInterceptor(hiveCacheStore: cacheStore));
+  dio.interceptors.add(ChuckerDioInterceptor());
   sl.registerSingleton<Dio>(dio);
 
   ///API base bloc
@@ -137,5 +178,85 @@ Future<void> init() async {
 
   sl.registerLazySingleton<GetSplashDataSource>(
     () => GetSplashDataSourceImpl(remoteDataSource: sl()),
+  );
+
+  sl.registerLazySingleton<LoginDataSource>(
+    () => LoginDataSourceImpl(remoteDataSource: sl()),
+  );
+
+  sl.registerLazySingleton<CreateAnAccountDataSource>(
+    () => CreateAnAccountDataSourceImpl(remoteDataSource: sl()),
+  );
+
+  sl.registerLazySingleton<ForgotPasswordDataSource>(
+    () => ForgotPasswordDataSourceImpl(remoteDataSource: sl()),
+  );
+
+  sl.registerLazySingleton<OtpVerificationDataSource>(
+    () => OtpVerificationDataSourceImpl(remoteDataSource: sl()),
+  );
+
+  sl.registerLazySingleton<ResetPasswordDataSource>(
+    () => ResetPasswordDataSourceImpl(remoteDataSource: sl()),
+  );
+
+  sl.registerLazySingleton(
+    () => LoginUseCase(getter.getLoginRepo()),
+  );
+
+  sl.registerLazySingleton(
+    () => SignupUseCase(getter.getCreateAnAccountRepo()),
+  );
+
+  sl.registerLazySingleton(
+    () => SendOTPUseCase(getter.getOtpVerificationRepo()),
+  );
+
+  sl.registerLazySingleton(
+    () => VerifyOTPUseCase(getter.getOtpVerificationRepo()),
+  );
+
+  sl.registerLazySingleton(
+    () => ForgotPasswordUseCase(getter.getForgotPasswordRepo()),
+  );
+
+  sl.registerLazySingleton(
+    () => ResetPasswordUseCase(getter.getResetPasswordRepo()),
+  );
+
+  sl.registerLazySingleton<DashboardDataSource>(
+    () => DashboardDataSourceImpl(remoteDataSource: sl()),
+  );
+
+  sl.registerLazySingleton<SettingDataSource>(
+    () => SettingDataSourceImpl(remoteDataSource: sl()),
+  );
+
+  sl.registerLazySingleton<DeleteAccountDataSource>(
+    () => DeleteAccountDataSourceImpl(remoteDataSource: sl()),
+  );
+
+  sl.registerLazySingleton(
+    () => DeleteAccountUseCase(getter.getDeleteAccountRepo()),
+  );
+
+  sl.registerLazySingleton<LogoutDataSource>(
+    () => LogoutDataSourceImpl(remoteDataSource: sl()),
+  );
+
+  sl.registerLazySingleton(
+    () => LogoutUseCase(getter.getLogoutRepo()),
+  );
+
+  sl.registerLazySingleton<NotificationDataSource>(
+    () => NotificationDataSourceImpl(remoteDataSource: sl()),
+  );
+
+  sl.registerLazySingleton<HomeDataSource>(
+    () => HomeDataSourceImpl(remoteDataSource: sl()),
+  );
+
+  sl.registerLazySingleton(
+    () => GetNotificationUseCase(getter.getNotificationRepo()),
   );
 }

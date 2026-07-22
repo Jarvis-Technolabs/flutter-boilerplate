@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_clean_architecture/core/localizations/app_localizations.dart';
+import 'package:flutter_clean_architecture/features/login/login_page.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 
 import '../../const/api_constants.dart';
 import '../../const/string_constants.dart';
@@ -8,7 +12,6 @@ import '../../routes/routes.dart';
 import '../../ui/widgets/custom_alert.dart';
 import '../../ui/widgets/loading_dialog.dart';
 import '../../ui/widgets/show_app_dialog.dart';
-import '../../util/utilities.dart';
 import '../bloc/api_base_bloc/api_base_bloc.dart';
 import '../bloc/api_base_bloc/api_base_bloc_state.dart';
 import 'base_screen.dart';
@@ -19,9 +22,11 @@ abstract class BaseBlocWidget extends BaseScreen {
 
 abstract class BaseBlocWidgetState<T extends BaseBlocWidget>
     extends BaseScreenState<T> {
+  late StreamSubscription<InternetStatus> internetStatus;
   @override
   void initState() {
     super.initState();
+    checkInternetAndCallAPI();
   }
 
   @override
@@ -30,6 +35,23 @@ abstract class BaseBlocWidgetState<T extends BaseBlocWidget>
       super.setState(fn);
     }
   }
+
+  void checkInternetAndCallAPI() {
+    internetStatus = InternetConnection().onStatusChange.listen(
+      (InternetStatus status) {
+        switch (status) {
+          case InternetStatus.connected:
+            callAPIWhenInternetConnected();
+            break;
+          case InternetStatus.disconnected:
+            // The internet is now disconnected
+            break;
+        }
+      },
+    );
+  }
+
+  void callAPIWhenInternetConnected() {}
 
   @override
   Widget build(BuildContext context) => super.build(context);
@@ -42,8 +64,9 @@ abstract class BaseBlocWidgetState<T extends BaseBlocWidget>
             listener: (ctx, state) {
               if (state is ApiErrorState) {
                 ///Pop Progress indicator dialog
-                hideDialog();
-
+                if(isDialogShowing){
+                  hideDialog();
+                }
                 ///Show Error dialog
                 stateError(
                   apiError: state,
@@ -80,7 +103,7 @@ abstract class BaseBlocWidgetState<T extends BaseBlocWidget>
   ///Pop screen
   void hideDialog() {
     isDialogShowing = false;
-    Navigator.of(context).pop();
+    goBack(context);
   }
 
   ///Show error in dialog
@@ -95,17 +118,14 @@ abstract class BaseBlocWidgetState<T extends BaseBlocWidget>
         child: WillPopScope(
           onWillPop: () async => false,
           child: CustomAlert(
-            titleText:
-                AppLocalizations.of(context).translate(apiError.title ?? LABEL_ERROR),
+            titleText: AppLocalizations.of(context)
+                .translateOrKey(apiError.title ?? LABEL_ERROR),
             descriptionText: apiError.message != null
-                ? apiError.apiStatusCode == UN_AUTHORISED_ERROR_CODE ||
-                        apiError.apiStatusCode == LOCAL_ERROR_CODE
-                    ? AppLocalizations.of(context).translate(apiError.message!)
-                    : apiError.message
+                ? AppLocalizations.of(context).translateOrKey(apiError.message!)
                 : "",
             buttonText: apiError.actionButtonText != null
                 ? AppLocalizations.of(context)
-                    .translate(apiError.actionButtonText!)
+                    .translateOrKey(apiError.actionButtonText!)
                 : null,
             onClick: () async {
               if (apiError.apiStatusCode == UN_AUTHORISED_ERROR_CODE) {
@@ -118,10 +138,11 @@ abstract class BaseBlocWidgetState<T extends BaseBlocWidget>
 
   ///Logout unauthorized user, clear data and navigate to splash or login screen
   Future<void> logoutAndClearAppData(BuildContext context) async {
-    await Utilities.clearData();
+    await commonUtilities.clearData();
     navigateAndRemoveAll(
       context: context,
-      routeName: Routes.splash,
+      routeName: Routes.loginPage,
+      route: LoginPage(),
     );
   }
 

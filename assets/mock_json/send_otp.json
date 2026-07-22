@@ -1,0 +1,10 @@
+{
+    "status": true,
+    "statusCode": 200,
+    "message": "Success",
+    "data": {
+        "otpToken": "12345555",
+        "isResendOtpAllowed": true
+    }
+}
+

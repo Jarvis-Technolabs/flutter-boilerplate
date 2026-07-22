@@ -1,0 +1,16 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Background -->
+    <item android:drawable="@color/appBackgroundColor" />
+
+    <!-- Centered static logo with size -->
+    <item
+        android:gravity="center">
+        <bitmap
+            android:src="@mipmap/ic_splash_logo"
+            android:gravity="center"
+            android:tileMode="disabled" />
+    </item>
+
+
+</layer-list>

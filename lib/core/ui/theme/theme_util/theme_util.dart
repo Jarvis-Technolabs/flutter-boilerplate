@@ -13,13 +13,19 @@ class ThemeUtil {
         scrollbarTheme: ScrollbarThemeData().copyWith(
           thumbColor: MaterialStateProperty.all(appColors.scrollbarColor),
         ),
-        fontFamily: MULISH_REGULAR_FONT_FAMILY,
+        fontFamily: FONT_FAMILY,
         primaryColor: appColors.primaryColor,
         useMaterial3: USE_MATERIAL_3,
         scaffoldBackgroundColor: appColors.screenBgColor,
         appBarTheme: Theme.of(context).appBarTheme.copyWith(
               color: appColors.primaryColor,
+              iconTheme: IconThemeData(
+                color: appColors.whiteColor,
+              ),
             ),
+        tabBarTheme: const TabBarThemeData().copyWith(
+          overlayColor: WidgetStateProperty.all(appColors.whiteColor),
+        ),
         colorScheme: ColorScheme.fromSwatch().copyWith(
           secondary: appColors.secondaryColor,
           brightness: Theme.of(context).brightness,
@@ -55,13 +61,19 @@ class ThemeUtil {
         scrollbarTheme: ScrollbarThemeData().copyWith(
           thumbColor: MaterialStateProperty.all(appColors.scrollbarColor),
         ),
-        fontFamily: MULISH_REGULAR_FONT_FAMILY,
+        fontFamily: FONT_FAMILY,
         primaryColor: appColors.primaryColor,
         useMaterial3: USE_MATERIAL_3,
         scaffoldBackgroundColor: appColors.screenBgColor,
         appBarTheme: Theme.of(context).appBarTheme.copyWith(
               color: appColors.primaryColor,
+              iconTheme: IconThemeData(
+                color: appColors.whiteColor,
+              ),
             ),
+        tabBarTheme: const TabBarThemeData().copyWith(
+          overlayColor: WidgetStateProperty.all(appColors.whiteColor),
+        ),
         colorScheme: ColorScheme.fromSwatch().copyWith(
           secondary: appColors.secondaryColor,
           brightness: Theme.of(context).brightness,
@@ -95,42 +107,41 @@ class ThemeUtil {
       TimePickerThemeData(
         backgroundColor: appColors.screenBgColor,
         hourMinuteShape: const RoundedRectangleBorder(
-
           borderRadius: BorderRadius.all(Radius.circular(4)),
         ),
         dayPeriodColor: MaterialStateColor.resolveWith((states) =>
-        states.contains(MaterialState.selected)
-            ? appColors.primaryColor.withOpacity(0.1)
-            : appColors.screenBgColor),
+            states.contains(MaterialState.selected)
+                ? appColors.primaryColor.withOpacity(0.1)
+                : appColors.screenBgColor),
         dayPeriodTextColor: MaterialStateColor.resolveWith((states) =>
-        states.contains(MaterialState.selected)
-            ? appColors.primaryColor
-            : appColors.textColor),
+            states.contains(MaterialState.selected)
+                ? appColors.primaryColor
+                : appColors.textColor),
         dayPeriodShape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(4)),
         ),
         dayPeriodBorderSide: BorderSide.none,
         hourMinuteColor: MaterialStateColor.resolveWith((states) =>
-        states.contains(MaterialState.selected)
-            ? appColors.primaryColor.withOpacity(0.1)
-            : appColors.screenBgColor),
+            states.contains(MaterialState.selected)
+                ? appColors.primaryColor.withOpacity(0.1)
+                : appColors.screenBgColor),
         hourMinuteTextColor: MaterialStateColor.resolveWith((states) =>
-        states.contains(MaterialState.selected)
-            ? appColors.primaryColor
-            : appColors.textColor),
+            states.contains(MaterialState.selected)
+                ? appColors.primaryColor
+                : appColors.textColor),
         dialHandColor: appColors.primaryColor,
         dialBackgroundColor: appColors.screenBgColor,
         hourMinuteTextStyle: const TextStyle(
           fontSize: 40,
           fontWeight: FontWeight.w700,
-          fontFamily: MULISH_REGULAR_FONT_FAMILY,
+          fontFamily: FONT_FAMILY,
         ),
         dayPeriodTextStyle: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w400,
-          fontFamily: MULISH_REGULAR_FONT_FAMILY,
+          fontFamily: FONT_FAMILY,
         ),
-        helpTextStyle:  TextStyle(
+        helpTextStyle: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.bold,
           color: appColors.textColor,
@@ -138,10 +149,9 @@ class ThemeUtil {
         inputDecorationTheme: const InputDecorationTheme(
           border: InputBorder.none,
           contentPadding: EdgeInsets.all(0),
-
         ),
         dialTextColor: MaterialStateColor.resolveWith(
-              (states) => states.contains(MaterialState.selected)
+          (states) => states.contains(MaterialState.selected)
               ? appColors.whiteColor
               : appColors.textColor,
         ),

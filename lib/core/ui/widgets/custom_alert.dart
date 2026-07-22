@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_clean_architecture/core/base/screen/base_screen.dart';
 import 'package:flutter_clean_architecture/core/const/string_constants.dart';
-import 'package:flutter_clean_architecture/core/ui/theme/text_style_extension/text_style_extension.dart';
+import 'package:flutter_clean_architecture/core/localizations/localization_extension.dart';
+import 'package:flutter_clean_architecture/core/ui/theme/text_extension/text_extension.dart';
 import 'package:flutter_clean_architecture/core/ui/widget_extension/widget_extension.dart';
 import 'package:flutter_clean_architecture/core/ui/widgets/button.dart';
 
@@ -56,7 +57,8 @@ class _CustomAlertState extends BaseScreenState<CustomAlert> {
             height: screenUtil.setHeight(24.0),
           ),
           PrimaryButton(
-            title: widget.buttonText ?? AppLocalizations.of(context).translate(LABEL_TITLE_OK),
+            title: widget.buttonText ??
+                context.tr(LABEL_TITLE_OK),
             backgroundColor: appColors.primaryColor,
             buttonTextColor: appColors.whiteColor,
             selectHandler: () {

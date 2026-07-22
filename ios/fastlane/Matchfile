@@ -1,0 +1,9 @@
+git_url("https://jarvistechnolabs@dev.azure.com/jarvistechnolabs/Test/_git/iOS%20Certificates")
+
+storage_mode("git")
+
+
+# For all available options run `fastlane match --help`
+# Remove the # in the beginning of the line to enable the other options
+
+# The docs are available on https://docs.fastlane.tools/actions/match

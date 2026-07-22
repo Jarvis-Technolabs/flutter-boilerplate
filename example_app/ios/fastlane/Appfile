@@ -1,0 +1,4 @@
+app_identifier("com.flutter_clean_architecture.pinspot") # The bundle identifier of your app
+apple_id("test.projects@gmail.com") # Your Apple email address
+team_id("QP2Y95345C") # Developer Portal Team ID
+# team_name("??")# in case of multiple team

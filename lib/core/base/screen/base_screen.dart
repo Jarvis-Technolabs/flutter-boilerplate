@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_clean_architecture/core/localizations/app_localizations.dart';
+import 'package:flutter_clean_architecture/core/localizations/localization_extension.dart';
 import 'package:flutter_clean_architecture/core/ui/theme/colors/colors_dark.dart';
-import 'package:flutter_clean_architecture/core/util/utilities.dart';
+import 'package:flutter_clean_architecture/core/util/common_utilities.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:logger/logger.dart';
 
 import '../../app_configuration_bloc/app_configuration_bloc.dart';
@@ -14,7 +16,6 @@ import '../../preference/preference_helper.dart';
 import '../../ui/theme/colors/colors_inf.dart';
 import '../../ui/theme/colors/colors_light.dart';
 import '../../util/screen_util/init_screen_util.dart';
-import '../../util/screen_util/screen_util.dart';
 
 abstract class BaseScreen extends StatefulWidget {
   const BaseScreen({Key? key}) : super(key: key);
@@ -26,6 +27,7 @@ abstract class BaseScreenState<T extends BaseScreen> extends State<T>
   late ColorsInf appColors;
   Logger? logger = sl();
   PreferenceHelper preferenceHelper = sl();
+  CommonUtilities commonUtilities = sl();
 
   @override
   void initState() {
@@ -77,9 +79,10 @@ abstract class BaseScreenState<T extends BaseScreen> extends State<T>
 
   void removeFocus() => FocusScope.of(context).requestFocus(FocusNode());
 
-  void comingSoon() => Utilities.showToast(
-        message: AppLocalizations.of(context).translate(LABEL_COMING_SOON),
-        appColors: appColors,
+  void comingSoon() => commonUtilities.showToast(
+        message: context.tr(LABEL_COMING_SOON),
+        textColors: appColors.whiteColor,
+        backgroundColors: appColors.blackColor,
       );
 
   void darkStatusBarTheme() {

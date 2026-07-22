@@ -9,7 +9,7 @@ import 'package:flutter_clean_architecture/core/const/api_constants.dart';
 import 'package:flutter_clean_architecture/core/di/injection_container.dart';
 import 'package:flutter_clean_architecture/core/flavour/flavour_config.dart';
 import 'package:flutter_clean_architecture/core/preference/preference_helper.dart';
-import 'package:flutter_clean_architecture/core/util/utilities.dart';
+import 'package:flutter_clean_architecture/core/util/common_utilities.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
@@ -23,6 +23,8 @@ const String POST_METHOD = 'POST';
 const String PUT_METHOD = 'PUT';
 const String PATCH_METHOD = 'PATCH';
 const String DELETE_METHOD = 'DELETE';
+
+CommonUtilities commonUtilities = sl();
 
 class RemoteDataSourceImpl extends IRemoteDataSource {
   late final Dio client;
@@ -44,9 +46,7 @@ class RemoteDataSourceImpl extends IRemoteDataSource {
     return requestOptions;
   }
 
-
   Future<void> setClient() async {
-
     /// TODO: Set certificate for SSL pinning
     var certificate =
         (await rootBundle.load(FlavourConfig.instance!.SSL_CERTIFICATE_PATH))
@@ -194,6 +194,9 @@ class RemoteDataSourceImpl extends IRemoteDataSource {
     Map<String, String>? requestBody,
   }) async {
     try {
+      final String requestUrl =
+          Uri.parse(getBaseUrl()).resolve(path).toString();
+
       ///Header
       PreferenceHelper preferenceHelper = sl();
       Map<String, String> _headers = {};
@@ -214,8 +217,8 @@ class RemoteDataSourceImpl extends IRemoteDataSource {
       );
 
       /// Request log
-      Utilities.printFullLog(
-          "\n\nAPI: ${path} => HEADER[${jsonEncode(_headers)}] => REQUEST_BODY[${'POST[Multipart request]'}]: ${jsonEncode(requestBody)}\n\n");
+      commonUtilities.printFullLog(
+          "\n\nAPI: $requestUrl => HEADER[${jsonEncode(_headers)}] => REQUEST_BODY[${'POST[Multipart request]'}]: ${jsonEncode(requestBody)}\n\n");
 
       ///Multipart request
       ApiResponse apiResponse = await compute(
@@ -230,13 +233,13 @@ class RemoteDataSourceImpl extends IRemoteDataSource {
       );
 
       /// Response log
-      Utilities.printFullLog(
-          "\n\nAPI: ${path} => RESPONSE[${apiResponse.statusCode}] => RESPONSE_BODY: ${apiResponse.toString()}\n\n");
+      commonUtilities.printFullLog(
+          "\n\nAPI: $requestUrl => RESPONSE[${apiResponse.statusCode}] => RESPONSE_BODY: ${apiResponse.toString()}\n\n");
 
       return apiResponse;
     } catch (e) {
       ///Error log
-      Utilities.printFullLog('errorLogs' + e.toString());
+      commonUtilities.printFullLog('errorLogs' + e.toString());
       throw e;
     }
   }
@@ -314,8 +317,14 @@ Future<ApiResponse> uploadMultiImages(
     ///Set header in request
     request.headers.addAll(multiImageUploadSetting.headers);
 
+    ///Set response type
+    request.headers.putIfAbsent(
+      ACCEPT,
+      () => APPLICATION_JSON_CONTENT_TYPE,
+    );
+
     ///Set fields in request
-    request.fields.addAll(multiImageUploadSetting.requestBody??{});
+    request.fields.addAll(multiImageUploadSetting.requestBody ?? {});
 
     ///Set files in request
     multiImageUploadSetting.fileRequest.forEach(

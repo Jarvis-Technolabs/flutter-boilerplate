@@ -1,10 +1,19 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:chucker_flutter/chucker_flutter.dart';
 import 'package:device_preview/device_preview.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_clean_architecture/core/crashlytics_config/crashlytics_config.dart';
+import 'package:flutter_clean_architecture/core/flavour/flavour_config.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'core/app_configuration_bloc/app_configuration_bloc.dart';
@@ -24,49 +33,68 @@ import 'core/ui/theme/colors/colors_light.dart';
 import 'core/ui/theme/theme_util/theme_util.dart';
 
 void mainDelegate() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Preference.init();
-  await di.init();
-
-  ///Todo: Uncomment after firebase setup
-  // await Firebase.initializeApp();
-  // if (kReleaseMode) {
-  //   await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
-  //   await FirebaseCrashlytics.instance;
-  //   await CrashlyticsConfig.setCrashlyticsData();
-  // }
-  // FlutterError.onError = (FlutterErrorDetails details) {
-  //   FirebaseCrashlytics.instance.recordFlutterError(details);
-  // };
-
-  ///Set portrait mode
-  await SystemChrome.setPreferredOrientations(
-    [
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ],
-  );
-
   runZonedGuarded(
-    () async => runApp(
-      DevicePreview(
-        enabled: ENABLE_DEVICE_PREVIEW,
-        builder: (BuildContext context) => MultiBlocProvider(
-          providers: [
-            BlocProvider<AppConfigurationBloc>(
-              create: (context) => sl(),
-            ),
-            BlocProvider<ApiBaseBloc>(
-              create: (context) => sl(),
-            ),
-          ],
-          child: MyApp(),
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
+      await Preference.init();
+      await di.init();
+
+      await Firebase.initializeApp();
+      await FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
+      if (kReleaseMode) {
+        await FirebaseCrashlytics.instance
+            .setCrashlyticsCollectionEnabled(true);
+        await FirebaseCrashlytics.instance;
+        await CrashlyticsConfig.setCrashlyticsData();
+      }
+      ///TODO: If you need Chucker Flutter library instead of storing API logs in a text file.
+      if(FlavourConfig.isStaging() || FlavourConfig.isDev()){
+        ChuckerFlutter.configure(
+          showOnRelease: true,
+          showNotification: false,
+        );
+      }
+      FlutterError.onError = (FlutterErrorDetails details) {
+        if (Firebase.apps.isNotEmpty) {
+          FirebaseCrashlytics.instance.recordFlutterError(details);
+        } else {
+          FlutterError.dumpErrorToConsole(details);
+        }
+      };
+      FirebaseMessaging.instance.requestPermission();
+
+      ///Set portrait mode
+      await SystemChrome.setPreferredOrientations(
+        [
+          DeviceOrientation.portraitUp,
+          DeviceOrientation.portraitDown,
+        ],
+      );
+
+      runApp(
+        DevicePreview(
+          enabled: ENABLE_DEVICE_PREVIEW,
+          builder: (BuildContext context) => MultiBlocProvider(
+            providers: [
+              BlocProvider<AppConfigurationBloc>(
+                create: (context) => sl(),
+              ),
+              BlocProvider<ApiBaseBloc>(
+                create: (context) => sl(),
+              ),
+            ],
+            child: MyApp(),
+          ),
         ),
-      ),
-    ),
+      );
+    },
     (object, stackTrace) {
-      ///Todo: Uncomment after firebase setup
-      //FirebaseCrashlytics.instance.recordError(object, stackTrace);
+      if (Firebase.apps.isNotEmpty) {
+        FirebaseCrashlytics.instance.recordError(object, stackTrace);
+      } else {
+        debugPrint(object.toString());
+        debugPrintStack(stackTrace: stackTrace);
+      }
     },
   );
 }
@@ -80,12 +108,28 @@ class MyApp extends StatefulWidget {
 
 class _MyApp extends State<MyApp> {
   PreferenceHelper preferenceHelper = sl();
+  final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+
+  //TODO: If the application launch screen contains an animated GIF or Lottie animation, then Flutter Splash MUST be enabled this flag isShowAnimatedSplashForIOS = true for iOS.
+  bool isShowAnimatedSplashForIOS = false;
+  bool isFlutterSplashEnableForIOS = false;
+
+  @override
+  void initState() {
+    isFlutterSplashEnableForIOS =
+        Platform.isIOS ? isShowAnimatedSplashForIOS : false;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) =>
       BlocBuilder<AppConfigurationBloc, AppConfigurationState>(
-        builder: (BuildContext context, AppConfigurationState state) =>
+        builder: (
+          BuildContext context,
+          AppConfigurationState state,
+        ) =>
             MaterialApp(
+          navigatorKey: ChuckerFlutter.navigatorKey,
           useInheritedMediaQuery: true,
           builder: DevicePreview.appBuilder,
           themeMode: ThemeMode.light,
@@ -107,9 +151,37 @@ class _MyApp extends State<MyApp> {
             context: context,
             appColors: getAppColors(),
           ),
-          initialRoute: Routes.splash,
+
+          /// TODO - Update routes based on login state of user
+          initialRoute: isFlutterSplashEnableForIOS
+              ? Routes.splash
+              : Routes.splash,
           routes: Routes.routes,
-          navigatorObservers: [ScreenNavigationLogger()],
+          navigatorObservers: [
+            ScreenNavigationLogger(),
+            FirebaseAnalyticsObserver(
+              analytics: analytics,
+              routeFilter: (Route<dynamic>? route) => route is PageRoute,
+              nameExtractor: (RouteSettings settings) {
+                if (settings.arguments is RouteAnalyticsArguments) {
+                  final String? customScreenName =
+                      (settings.arguments as RouteAnalyticsArguments)
+                          .screenName
+                          ?.trim();
+                  if (customScreenName != null &&
+                      customScreenName.isNotEmpty) {
+                    return formatAnalyticsScreenName(customScreenName);
+                  }
+                }
+
+                final String? routeName = settings.name?.trim();
+                if (routeName == null || routeName.isEmpty) {
+                  return null;
+                }
+                return formatAnalyticsScreenName(routeName);
+              },
+            ),
+          ],
         ),
       );
 

@@ -1,0 +1,7 @@
+Release note:
+
+Following is the list of completed DevOps tickets:
+
+Note:
+- Please uninstall the previously installed build.
+- The app is in QA review.

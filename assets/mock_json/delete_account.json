@@ -1,0 +1,8 @@
+{
+    "status": true,
+    "statusCode": 200,
+    "message": "Success",
+    "data": {
+       "isAccountDeleted": true
+    }
+}

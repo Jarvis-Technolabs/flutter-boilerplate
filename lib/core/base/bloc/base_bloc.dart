@@ -22,7 +22,7 @@ abstract class BaseBloc<Event, State> extends Bloc<Event, State> {
   ///Todo: Please remove below method usage after API integration
   Future<void> mockAPIDelay() async => await Future.delayed(
         Duration(
-          milliseconds: 300,
+          milliseconds: 1000,
         ),
       );
 

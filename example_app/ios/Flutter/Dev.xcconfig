@@ -1,0 +1,4 @@
+#include "Generated.xcconfig"
+FLUTTER_TARGET=lib/core/flavour/main_dev.dart
+APP_NAME = Dev Example App
+PRODUCT_BUNDLE_IDENTIFIER = com.jarvistechnolabs.exampleapp.dev

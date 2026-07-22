@@ -1,0 +1,110 @@
+{
+  "status": true,
+  "statusCode": 200,
+  "message": "Success",
+  "data": {
+    "notifications": [
+      {
+        "id": 1,
+        "title": "Freightliner Cascadia 113",
+        "description": "Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui"
+      },
+      {
+        "id": 2,
+        "title": "Peterbilt 379",
+        "description": "Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui"
+      },
+      {
+        "id": 3,
+        "title": "Kenworth W900",
+        "description": "Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui"
+      },
+      {
+        "id": 4,
+        "title": "Freightliner Cascadia",
+        "description": "Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui"
+      },
+      {
+        "id": 5,
+        "title": "Kenworth W900",
+        "description": "Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui"
+      },
+      {
+        "id": 6,
+        "title": "Freightliner Cascadia 113",
+        "description": "Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui"
+      },
+      {
+        "id": 7,
+        "title": "Peterbilt 379",
+        "description": "Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui"
+      },
+      {
+        "id": 8,
+        "title": "Kenworth W900",
+        "description": "Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui"
+      },
+      {
+        "id": 9,
+        "title": "Freightliner Cascadia",
+        "description": "Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui"
+      },
+      {
+        "id": 10,
+        "title": "Kenworth W900",
+        "description": "Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui"
+      },
+      {
+        "id": 1,
+        "title": "Freightliner Cascadia 113",
+        "description": "Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui"
+      },
+      {
+        "id": 2,
+        "title": "Peterbilt 379",
+        "description": "Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui"
+      },
+      {
+        "id": 3,
+        "title": "Kenworth W900",
+        "description": "Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui"
+      },
+      {
+        "id": 4,
+        "title": "Freightliner Cascadia",
+        "description": "Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui"
+      },
+      {
+        "id": 5,
+        "title": "Kenworth W900",
+        "description": "Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui"
+      },
+      {
+        "id": 6,
+        "title": "Freightliner Cascadia 113",
+        "description": "Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui"
+      },
+      {
+        "id": 7,
+        "title": "Peterbilt 379",
+        "description": "Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui"
+      },
+      {
+        "id": 8,
+        "title": "Kenworth W900",
+        "description": "Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui"
+      },
+      {
+        "id": 9,
+        "title": "Freightliner Cascadia",
+        "description": "Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui"
+      },
+      {
+        "id": 10,
+        "title": "Kenworth W900",
+        "description": "Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui"
+      }
+    ],
+    "total": 101
+  }
+}

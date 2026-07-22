@@ -3,8 +3,11 @@ import Flutter
 /*To set the map key please uncomment the below code*/
 // import GoogleMaps
 
-@UIApplicationMain
+@main
 @objc class AppDelegate: FlutterAppDelegate {
+    private let jailBreakChannelName = "jailBreakChannel"
+    private let checkJailbreakMethod = "checkJailbreak"
+
     override func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
@@ -19,10 +22,14 @@ import Flutter
 
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
 
-        let jailBreakChannel = FlutterMethodChannel(name: "jailBreakChannel",
+        let jailBreakChannel = FlutterMethodChannel(name: jailBreakChannelName,
                                                     binaryMessenger: controller.binaryMessenger)
         jailBreakChannel.setMethodCallHandler({
             (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
+            guard call.method == self.checkJailbreakMethod else {
+                result(FlutterMethodNotImplemented)
+                return
+            }
             result(UIDevice.current.isJailBroken)
         })
         

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_clean_architecture/core/base/screen/base_screen.dart';
 import 'package:flutter_clean_architecture/core/const/string_constants.dart';
-import 'package:flutter_clean_architecture/core/ui/theme/text_style_extension/text_style_extension.dart';
+import 'package:flutter_clean_architecture/core/localizations/localization_extension.dart';
+import 'package:flutter_clean_architecture/core/ui/theme/text_extension/text_extension.dart';
 import 'package:flutter_clean_architecture/core/ui/widget_extension/widget_extension.dart';
 
 import '../../localizations/app_localizations.dart';
@@ -24,9 +25,11 @@ class _NoRecordsWidgetsState extends BaseScreenState<NoRecordsWidget> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Flexible(
-            child: (widget.title ?? AppLocalizations.of(context).translate(LABEL_NO_RECORD_FOUND)).getText18W700Text(
+            child: (widget.title ??
+                    context.tr(LABEL_NO_RECORD_FOUND))
+                .getText18W700Text(
               screenUtil: screenUtil,
-              color: appColors.textColor,
+              appColors: appColors,
               maxLine: 3,
               textAlign: TextAlign.center,
             ),

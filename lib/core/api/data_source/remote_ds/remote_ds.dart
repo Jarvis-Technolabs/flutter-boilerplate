@@ -14,7 +14,6 @@ abstract class IRemoteDataSource {
     String? token,
     Map<String, dynamic>? requestBody,
     Map<String, dynamic>? queryParameters,
-
   });
 
   Future<ApiResponse> executeMultipart({

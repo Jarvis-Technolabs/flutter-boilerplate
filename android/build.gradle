@@ -1,17 +1,25 @@
-buildscript {
-    ext.kotlin_version = '1.7.10'
-    repositories {
-        google()
-        mavenCentral()
+
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+def configureAndroidJvmTarget(Project project) {
+    project.afterEvaluate {
+        if (project.hasProperty('android')) {
+            project.android {
+                if (namespace == null) {
+                    namespace project.group
+                }
+                compileOptions {
+                    sourceCompatibility = JavaVersion.VERSION_17
+                    targetCompatibility = JavaVersion.VERSION_17
+                }
+            }
+        }
     }
 
-    dependencies {
-        ///Todo: Uncomment when you setup firebase
-        //classpath 'com.google.gms:google-services:4.3.3'
-        classpath 'com.android.tools.build:gradle:7.2.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        //classpath 'com.google.firebase:firebase-crashlytics-gradle:2.2.0'
-
+    project.tasks.withType(KotlinCompile).configureEach {
+        kotlinOptions {
+            jvmTarget = '17'
+        }
     }
 }
 
@@ -26,13 +34,13 @@ rootProject.buildDir = '../build'
 
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
+    configureAndroidJvmTarget(project)
 }
 subprojects {
     project.evaluationDependsOn(':app')
 }
 
-task clean(type: Delete) {
+tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
-
 

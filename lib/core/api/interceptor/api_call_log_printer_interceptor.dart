@@ -4,18 +4,19 @@ import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 
 import '../../di/injection_container.dart';
-import '../../util/utilities.dart';
+import '../../util/common_utilities.dart';
 
 class ApiCallLogPrinterInterceptors extends InterceptorsWrapper {
   Logger logger = sl();
+  CommonUtilities commonUtilities = sl();
 
   @override
   void onRequest(
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) {
-    Utilities.printFullLog(
-        "\n\nAPI: ${options.path} => HEADER[${jsonEncode(options.headers)}] => REQUEST_BODY[${options.method}]: ${jsonEncode(options.data)}\n\n");
+    commonUtilities.printFullLog(
+        "\n\nAPI: ${options.uri} => HEADER[${jsonEncode(options.headers)}] => REQUEST_BODY[${options.method}]: ${jsonEncode(options.data)}\n\n");
     return super.onRequest(options, handler);
   }
 
@@ -24,8 +25,8 @@ class ApiCallLogPrinterInterceptors extends InterceptorsWrapper {
     Response response,
     ResponseInterceptorHandler handler,
   ) {
-    Utilities.printFullLog(
-        "\n\nAPI: ${response.requestOptions.path} => RESPONSE[${response.statusCode}] => RESPONSE_BODY: ${response}\n\n");
+    commonUtilities.printFullLog(
+        "\n\nAPI: ${response.requestOptions.uri} => RESPONSE[${response.statusCode}] => RESPONSE_BODY: ${response}\n\n");
     return super.onResponse(response, handler);
   }
 
@@ -34,8 +35,8 @@ class ApiCallLogPrinterInterceptors extends InterceptorsWrapper {
     DioException err,
     ErrorInterceptorHandler handler,
   ) {
-    Utilities.printFullLog(
-        "ERROR[${err.response?.statusCode}] => PATH: ${err.requestOptions.path}");
+    commonUtilities.printFullLog(
+        "ERROR[${err.response?.statusCode}] => PATH: ${err.requestOptions.uri}");
     return super.onError(err, handler);
   }
 }

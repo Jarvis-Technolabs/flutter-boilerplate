@@ -3,21 +3,20 @@ import 'dart:convert';
 import 'package:avatar_view/avatar_view.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../const/image_constants.dart';
-import '../../util/screen_util/screen_util.dart';
 import '../theme/colors/colors_inf.dart';
 
 extension ImageExtension on String {
   ///SVG icon
-  Widget getSvgIcon({
-    required ScreenUtil screenUtil,
-    ColorFilter? color,
-    double imgHeight = 24.0,
-    double imgWidth = 24.0,
-    BoxFit fit = BoxFit.none
-  }) =>
+  Widget getSvgIcon(
+          {required ScreenUtil screenUtil,
+          ColorFilter? color,
+          double imgHeight = 24.0,
+          double imgWidth = 24.0,
+          BoxFit fit = BoxFit.none}) =>
       SvgPicture.asset(
         this,
         height: screenUtil.setHeight(imgHeight),

@@ -13,9 +13,9 @@ abstract class PreferenceHelper {
 
   Future<void> setUserName(String value);
 
-  Future<String?> getPassword();
+  Future<String?> getMobileNo();
 
-  Future<void> setPassword(String value);
+  Future<void> setMobileNo(String value);
 
   bool getIsUserLoggedIn();
 

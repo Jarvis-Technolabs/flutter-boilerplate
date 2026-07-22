@@ -1,0 +1,9 @@
+{
+  "status": true,
+  "statusCode": 200,
+  "message": "Success",
+  "data": {
+    "minimumAndroidVersion": 0,
+    "minimumiOSVersion": 0
+  }
+}

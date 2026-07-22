@@ -15,6 +15,7 @@ class FirebaseNotificationDataSourceImpl
       FlutterLocalNotificationsPlugin();
   FirebaseMessaging _firebaseMessaging = sl();
   int id = 0;
+  String androidNotificationIcon = '@mipmap/ic_launcher';
 
   ///Call initializeNotifications when you want to start listing for notification. eg. after user successful login
   @override
@@ -46,18 +47,12 @@ class FirebaseNotificationDataSourceImpl
 
     ///Init local notification
     await flutterLocalNotificationsPlugin.initialize(
-      InitializationSettings(
-        android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+      settings: InitializationSettings(
+        android: AndroidInitializationSettings(androidNotificationIcon),
         iOS: DarwinInitializationSettings(
           requestAlertPermission: true,
           requestBadgePermission: true,
           requestSoundPermission: true,
-          onDidReceiveLocalNotification: (
-            int id,
-            String? title,
-            String? body,
-            String? payload,
-          ) async {},
         ),
       ),
       onDidReceiveNotificationResponse: (NotificationResponse? payload) async {
@@ -67,10 +62,10 @@ class FirebaseNotificationDataSourceImpl
 
     ///Foreground message listen
     FirebaseMessaging.onMessage.listen(
-          (RemoteMessage remoteMessage) async {
+      (RemoteMessage remoteMessage) async {
         RemoteNotification? notification = remoteMessage.notification;
         String? body, title;
-        if(notification != null){
+        if (notification != null) {
           if (Platform.isAndroid) {
             body = notification.body;
             title = notification.title;
@@ -123,17 +118,17 @@ class FirebaseNotificationDataSourceImpl
         importance: Importance.max,
         priority: Priority.high,
         color: AppColor.primaryColor,
-        icon: "@mipmap/ic_launcher",
+        icon: androidNotificationIcon,
         groupKey: NOTIFICATION_GROUP_KEY,
         setAsGroupSummary: true,
       ),
       iOS: DarwinNotificationDetails(),
     );
     await flutterLocalNotificationsPlugin.show(
-      id,
-      title,
-      body,
-      notificationDetails,
+      id: id,
+      title: title,
+      body: body,
+      notificationDetails: notificationDetails,
     );
   }
 

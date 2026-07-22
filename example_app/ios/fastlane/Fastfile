@@ -1,0 +1,89 @@
+default_platform(:ios)
+
+api_key = app_store_connect_api_key(
+                key_id: "Z8KA6X6Y9R",
+                issuer_id: "37fa4318-8d45-430f-88cf-f7d5c06fcd06",
+                key_filepath: "../fastlane_config/jsonKey/AppStoreJsonKey.p8",
+                in_house: false
+              )
+
+platform :ios do
+  desc "Install staging profile and certificates and update it on git repo"
+   lane :staging_profile_install do
+    setup_ci
+    match(type: 'development', app_identifier: [ 'com.flutter_clean_architecture.staging'],force_for_new_devices: true,
+    api_key:api_key,)
+     end
+
+  desc "Install Production profile and certificates and update it on git repo"
+    lane :prod_profile_install do
+      setup_ci
+      match(type: 'appstore', app_identifier: ['com.flutter_clean_architecture.pinspot' ],force_for_new_devices: true,
+          api_key:api_key,)
+      match(type: 'development', app_identifier: ['com.flutter_clean_architecture.pinspot' ],force_for_new_devices: true,
+          api_key:api_key,)
+     end
+
+  desc "Description of what the lane does"
+    lane :distribute_firebase_staging do
+        sh "chmod 775 ./flutter_build.sh"
+        staging_profile_install
+        sh "./flutter_build.sh --ios_staging"
+        build_app(
+          scheme: "staging", 
+          export_xcargs: "-allowProvisioningUpdates", 
+          export_method: "development",
+          export_options: {
+            provisioningProfiles: {
+              "com.flutter_clean_architecture.staging" => "match Development com.flutter_clean_architecture.staging"
+            }
+          }
+        )
+        firebase_app_distribution(
+              app: "1:14337061686:ios:0d537ca31b336f9ef2f997",
+              release_notes_file: "../fastlane_config/ios_release_config/ReleaseNotes.txt",
+              groups_file:"../fastlane_config/ios_release_config/Groups.txt",
+              service_credentials_file:"../fastlane_config/jsonKey/StagingJsonKey.json",
+            )
+    end
+
+  desc "Description of what the lane does"
+    lane :distribute_firebase_production do
+      sh "chmod 775 ./flutter_build.sh"
+      prod_profile_install
+      sh "./flutter_build.sh --ios_prod"
+      build_app(
+        scheme: "prod", 
+        export_xcargs: "-allowProvisioningUpdates", 
+        export_method: "development",
+        export_options: {
+          provisioningProfiles: {
+              "com.flutter_clean_architecture.pinspot" => "match Development com.flutter_clean_architecture.pinspot"
+          }
+        }
+      )
+      firebase_app_distribution(
+               app: "1:505458495033:ios:2cc31001400e87e09987e8",
+               service_credentials_file:"../fastlane_config/jsonKey/ProductionJsonKey.json",
+               release_notes_file: "../fastlane_config/ios_release_config/ReleaseNotes.txt",
+               groups_file:"../fastlane_config/ios_release_config/Groups.txt",
+            )
+
+    end
+    desc "Description of what the lane does"
+    lane :deploy_ios do
+        sh "chmod 775 ./flutter_build.sh"
+        prod_profile_install
+        team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
+        sh "./flutter_build.sh --ios_prod"
+        build_app(scheme: "prod", export_xcargs: "-allowProvisioningUpdates", export_method: "app-store",
+        export_options: {
+          provisioningProfiles: {
+              "com.flutter_clean_architecture.pinspot" => "match AppStore com.flutter_clean_architecture.pinspot"
+          }
+        }
+      )
+      upload_to_testflight( app_identifier: "com.flutter_clean_architecture.pinspot",team_id:team_id,
+        api_key:api_key, skip_waiting_for_build_processing: true,)
+    end
+end

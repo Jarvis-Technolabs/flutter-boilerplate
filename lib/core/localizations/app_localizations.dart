@@ -25,6 +25,15 @@ class AppLocalizations {
   }
 
   String translate(String key) => _localizedStrings[key] ?? "";
+
+  bool containsKey(String key) => _localizedStrings.containsKey(key);
+
+  String translateOrKey(String keyOrMessage) {
+    if (keyOrMessage.isEmpty) {
+      return "";
+    }
+    return containsKey(keyOrMessage) ? translate(keyOrMessage) : keyOrMessage;
+  }
 }
 
 class _AppLocalizationsDelegate
@@ -38,7 +47,7 @@ class _AppLocalizationsDelegate
 
   @override
   Future<AppLocalizations> load(Locale locale) async {
-    AppLocalizations localizations = AppLocalizations(locale:locale);
+    AppLocalizations localizations = AppLocalizations(locale: locale);
     await localizations.load();
     return localizations;
   }

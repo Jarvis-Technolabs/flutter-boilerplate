@@ -1,0 +1,44 @@
+default_platform(:android)
+
+platform :android do
+  desc "Android App distribution on firebase Staging Flavor"
+    lane :distribute_firebase_staging do
+         sh "chmod 775 ./flutter_build.sh"
+         sh "./flutter_build.sh --staging_apk"
+         firebase_app_distribution(
+                    app: "1:14337061686:android:c3469ac336cd3aebf2f997",
+                    service_credentials_file:"../fastlane_config/jsonKey/StagingJsonKey.json",
+                    groups_file:"../fastlane_config/android_release_config/Groups.txt",
+                    apk_path:"../build/app/outputs/apk/staging/release/app-staging-release.apk",
+                    release_notes_file: "../fastlane_config/android_release_config/ReleaseNotes.txt",
+                    debug:false
+             )
+  end
+  desc "Android App distribution on firebase Production flavor"
+    lane :distribute_firebase_production do
+      sh "chmod 775 ./flutter_build.sh"
+      sh "pwd"
+      sh "./flutter_build.sh --production_apk"
+      firebase_app_distribution(
+          app: "1:505458495033:android:6865f77e47367fcf9987e8",
+          service_credentials_file:"../fastlane_config/jsonKey/ProductionJsonKey.json", # to be put
+          groups_file:"../fastlane_config/android_release_config/Groups.txt",
+          apk_path:"../build/app/outputs/apk/prod/release/app-prod-release.apk",
+          release_notes_file: "../fastlane_config/android_release_config/ReleaseNotes.txt",
+          debug:false
+      )
+  end
+  desc "Deploy (Upload to play store)"
+    lane :deploy_android do |options|
+      sh "chmod 775 ./flutter_build.sh"
+      sh "./flutter_build.sh --aab"
+      upload_to_play_store(
+          track: options[:production] ? 'production' : options[:internal] ? 'internal' : options[:alpha] ? 'alpha' : 'beta',
+          aab: '../build/app/outputs/bundle/prodRelease/app-prod-release.aab',
+          skip_upload_images: true,
+          release_status:'draft',
+          skip_upload_screenshots: true,
+      )
+  end
+
+end

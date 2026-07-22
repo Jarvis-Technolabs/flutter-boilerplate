@@ -37,11 +37,11 @@ abstract class BaseApiRepo with MockDataImpl {
       String statusMessage = "";
       int statusCode = LOCAL_ERROR_CODE;
       if (e.response != null) {
-        statusCode = e.response!.statusCode!;
-        statusMessage = LABEL_INTERNAL_SERVER_ERROR;
-        if (statusCode == UN_AUTHORISED_ERROR_CODE) {
-          statusMessage = LABEL_UNAUTHORIZED_USER;
-        }
+        statusCode = e.response!.statusCode ?? LOCAL_ERROR_CODE;
+        statusMessage = _getApiErrorMessage(e) ??
+            (statusCode == UN_AUTHORISED_ERROR_CODE
+                ? LABEL_UNAUTHORIZED_USER
+                : LABEL_INTERNAL_SERVER_ERROR);
       } else {
         FirebaseCrashlytics.instance.log('Dio Response is null');
         if (e.error is SocketException) {
@@ -77,7 +77,7 @@ abstract class BaseApiRepo with MockDataImpl {
       return Left(
         defaultFailure(),
       );
-    } finally {}
+    }
   }
 
   ServerFailure defaultFailure() => ServerFailure(
@@ -130,5 +130,22 @@ abstract class BaseApiRepo with MockDataImpl {
           ),
         );
     }
+  }
+
+  String? _getApiErrorMessage(DioException exception) {
+    final responseData = exception.response?.data;
+
+    if (responseData is Map<String, dynamic>) {
+      final message = responseData['message'];
+      if (message is String && message.trim().isNotEmpty) {
+        return message;
+      }
+    }
+
+    if (responseData is String && responseData.trim().isNotEmpty) {
+      return responseData;
+    }
+
+    return null;
   }
 }

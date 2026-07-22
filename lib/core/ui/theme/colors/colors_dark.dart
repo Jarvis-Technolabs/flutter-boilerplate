@@ -4,7 +4,6 @@ import 'app_color.dart';
 import 'colors_inf.dart';
 
 class ColorsDark implements ColorsInf {
-
   @override
   Color primaryColor = AppColor.darkPrimaryColor;
 
@@ -45,7 +44,7 @@ class ColorsDark implements ColorsInf {
   Color disabledOutlineButtonColor = AppColor.darkDisabledOutlineButtonColor;
 
   @override
-  Color blackColor = AppColor.darkBlackColor;
+  Color blackColor = AppColor.blackColor;
 
   @override
   Color inactiveSteeperColor = AppColor.darkInactiveSteeperColor;
@@ -69,10 +68,10 @@ class ColorsDark implements ColorsInf {
   Color checkBoxFillColor = AppColor.darkCheckBoxFillColor;
 
   @override
-  Color hintColor =  AppColor.darkHintTextColor;
+  Color hintColor = AppColor.darkHintTextColor;
 
   @override
-  Color radioFillColor =  AppColor.darkRadioFillColor;
+  Color radioFillColor = AppColor.darkRadioFillColor;
 
   @override
   Color fabBgColor = AppColor.darkFabBgColor;
@@ -86,4 +85,9 @@ class ColorsDark implements ColorsInf {
   @override
   Color textSelectionHandlerColor = AppColor.darkTextSelectionHandlerColor;
 
+  @override
+  Color keyboardDoneColor = AppColor.blueDoneKeyboardTextColor;
+
+  @override
+  Color errorColor = AppColor.redColor;
 }

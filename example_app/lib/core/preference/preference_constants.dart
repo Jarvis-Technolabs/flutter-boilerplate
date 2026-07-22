@@ -1,0 +1,7 @@
+const String KEY_LANG = "KEY_LANG";
+const String KEY_IS_DARK = "KEY_IS_DARK";
+const String KEY_USER_NAME = "KEY_USER_NAME";
+const String KEY_PASSWORD = "KEY_PASSWORD";
+const String KEY_IS_USER_LOGGED_IN = "KEY_IS_USER_LOGGED_IN";
+const String KEY_PUBLIC_TOKEN = "KEY_PUBLIC_TOKEN";
+const String KEY_USER_TOKEN = "KEY_USER_TOKEN";

@@ -1,6 +1,9 @@
 import 'package:dartz/dartz.dart';
+import 'package:flutter_clean_architecture/core/di/injection_container.dart';
+import 'package:flutter_clean_architecture/core/preference/preference_helper.dart';
 import 'package:flutter_clean_architecture/features/splash/data/data_source/get_splash_data_source.dart';
 import 'package:flutter_clean_architecture/features/splash/data/model/get_mobile_config_response.dart';
+import 'package:flutter_clean_architecture/features/splash/data/model/public_token_response.dart';
 import 'package:flutter_clean_architecture/features/splash/domain/repositories/splash_repo.dart';
 
 import '../../../../core/api/data_source/network_info/network_info.dart';
@@ -18,17 +21,21 @@ class MockSplashRepoImpl extends SplashRepo {
 
   @override
   Future<Either<Failure, Success>> getMobileConfig() async {
-    ApiResponse attractionData = await loadFromAssetData(SPLASH_API);
+    ApiResponse response = await loadFromAssetData(SPLASH_API);
     GetMobileAPPConfigurationResponse getMobileAPPConfigurationResponse =
-        GetMobileAPPConfigurationResponse.fromJson(attractionData.data);
+        GetMobileAPPConfigurationResponse.fromJson(response.data);
     return Right(Success(data: getMobileAPPConfigurationResponse));
   }
 
   @override
   Future<Either<Failure, Success>> generatePublicToken() async {
-    ApiResponse attractionData = await loadFromAssetData(SPLASH_API);
-    GetMobileAPPConfigurationResponse getMobileAPPConfigurationResponse =
-        GetMobileAPPConfigurationResponse.fromJson(attractionData.data);
-    return Right(Success(data: getMobileAPPConfigurationResponse));
+    ApiResponse response = await loadFromAssetData(PUBLIC_TOKEN_API);
+    PublicTokenResponse publicTokenResponse =
+        PublicTokenResponse.fromJson(response.data);
+    if (publicTokenResponse.token != null) {
+      PreferenceHelper preferenceHelper = sl();
+      await preferenceHelper.setPublicToken(publicTokenResponse.token!);
+    }
+    return Right(Success(data: response.data));
   }
 }

@@ -1,0 +1,105 @@
+variables:
+  - group: flutter-variables
+  - name: FLUTTER_ROOT
+    value: $(SYSTEM_FLUTTER_ROOT)
+
+pool:
+  name: Default
+
+stages:
+  - stage: Stage_Deployments
+    condition: and(eq(variables['Build.Reason'], 'Manual'), or(eq(variables['build.sourceBranch'], 'refs/heads/master'), eq(variables['build.sourceBranch'], 'refs/heads/develop'), startsWith(variables['build.sourceBranch'], 'refs/heads/feature/'), startsWith(variables['build.sourceBranch'], 'refs/heads/release/'), startsWith(variables['build.sourceBranch'], 'refs/heads/hotfix/')))
+    jobs:
+      - job: android_appDistributionStaging
+        displayName: android_appDistributionStaging
+        steps:
+          - bash: echo $(SYSTEM_FLUTTER_ROOT)
+          - bash: |
+              fastlane add_plugin fastlane-plugin-firebase_app_distribution
+            workingDirectory: android
+
+          - bash: |
+              source ~/.zshrc
+              export PATH=$SYSTEM_FLUTTER_ROOT:$PATH
+              bundle exec fastlane distribute_firebase_staging
+            workingDirectory: android
+
+
+      - job: ios_appDistributionStaging
+        displayName: ios_appDistributionStaging
+        steps:
+          - bash: echo $(SYSTEM_FLUTTER_ROOT)
+          - bash: fastlane add_plugin fastlane-plugin-firebase_app_distribution
+            workingDirectory: ios
+          - bash: |
+              source ~/.zshrc
+              export PATH=$SYSTEM_FLUTTER_ROOT:$PATH
+              bundle exec fastlane distribute_firebase_staging
+            workingDirectory: ios
+            env:
+              MATCH_GIT_BEARER_AUTHORIZATION: $(System.AccessToken)
+              MATCH_PASSWORD: test
+
+
+
+  - stage: Production_Deployments_Firebase
+    condition: and(eq(variables['Build.Reason'], 'Manual'), or(eq(variables['build.sourceBranch'], 'refs/heads/master'), eq(variables['build.sourceBranch'], 'refs/heads/develop'), startsWith(variables['build.sourceBranch'], 'refs/heads/feature/'), startsWith(variables['build.sourceBranch'], 'refs/heads/release/'), startsWith(variables['build.sourceBranch'], 'refs/heads/hotfix/')))
+    jobs:
+      - job: android_appDistributionProd
+        displayName: android_appDistributionProd
+        steps:
+          - bash: echo $(SYSTEM_FLUTTER_ROOT)
+          - bash: fastlane add_plugin fastlane-plugin-firebase_app_distribution
+            workingDirectory: android
+
+          - bash: |
+              source ~/.zshrc
+              export PATH=$SYSTEM_FLUTTER_ROOT:$PATH
+              bundle exec fastlane distribute_firebase_production
+            workingDirectory: android
+
+
+      - job: ios_appDistributionProduction
+        displayName: ios_appDistributionProduction
+        steps:
+          - bash: echo $(SYSTEM_FLUTTER_ROOT)
+          - bash: fastlane add_plugin fastlane-plugin-firebase_app_distribution
+            workingDirectory: ios
+
+          - bash: |
+              source ~/.zshrc
+              export PATH=$SYSTEM_FLUTTER_ROOT:$PATH
+              bundle exec fastlane distribute_firebase_production
+            workingDirectory: ios
+            env:
+              MATCH_GIT_BEARER_AUTHORIZATION: $(System.AccessToken)
+              MATCH_PASSWORD: test
+
+
+
+  - stage: Production_Deployments_Stores
+    condition: and(eq(variables['Build.Reason'], 'Manual'), or(eq(variables['build.sourceBranch'], 'refs/heads/master'), eq(variables['build.sourceBranch'], 'refs/heads/develop')))
+    jobs:
+      - job: ios_appdeployment
+        displayName: ios_appdeployment
+        steps:
+          - bash: echo $(SYSTEM_FLUTTER_ROOT)
+          - bash: fastlane deploy_ios
+            workingDirectory: ios
+            env:
+              MATCH_GIT_BEARER_AUTHORIZATION: $(System.AccessToken)
+              MATCH_PASSWORD: test
+
+
+      - job: android_appdepolyment
+        displayName: android_appdepolyment
+        steps:
+          - bash: echo $(SYSTEM_FLUTTER_ROOT)
+          - bash: fastlane deploy_android internal:true
+            workingDirectory: android
+
+
+
+
+
+

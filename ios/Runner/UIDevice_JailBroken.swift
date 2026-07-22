@@ -2,9 +2,9 @@ import Foundation
 import UIKit
 
 extension UIDevice {
-    var isSimulator: Bool {
-        return TARGET_OS_SIMULATOR != 0
-    }
+   var isSimulator: Bool {
+          return ProcessInfo.processInfo.environment["SIMULATOR_DEVICE_NAME"] != nil
+   }
 
     var isJailBroken: Bool {
         get {
